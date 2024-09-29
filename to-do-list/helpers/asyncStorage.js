@@ -51,3 +51,15 @@ export const updateItem = async (id, title, description, status) => {
     console.log("Error while updateItem", err);
   }
 };
+
+export const deleteTodo = async (id) => {
+  try {
+    const storedList = await AsyncStorage.getItem("todo");
+    let todos = storedList ? JSON.parse(storedList) : [];
+
+    todos = todos.filter((todo) => todo.id !== id);
+    await AsyncStorage.setItem("todo", JSON.stringify(todos));
+  } catch (err) {
+    console.log("Error executing deleteTodo", err);
+  }
+};

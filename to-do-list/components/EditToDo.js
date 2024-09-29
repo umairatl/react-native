@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
+  Alert,
   StyleSheet,
   Text,
-  View,
   TextInput,
   TouchableOpacity,
-  Alert,
+  View,
 } from "react-native";
 import { updateItem } from "../helpers/asyncStorage";
 
@@ -15,6 +15,14 @@ export default function EditToDo({ route, navigation }) {
   const [editDesc, setEditDesc] = useState(item.description);
   const [editStatus, setEditStatus] = useState(item.status);
   const [isBtnDisabled, setIsBtnDisabled] = useState(true);
+
+  useEffect(() => {
+    if (editTitle.trim() && editDesc.trim()) {
+      setIsBtnDisabled(false);
+    } else {
+      setIsBtnDisabled(true);
+    }
+  }, [editTitle, editDesc]);
 
   const onClickEditDetail = async () => {
     const id = item.id;
@@ -27,14 +35,6 @@ export default function EditToDo({ route, navigation }) {
       },
     ]);
   };
-
-  useEffect(() => {
-    if (editTitle.trim() && editDesc.trim()) {
-      setIsBtnDisabled(false);
-    } else {
-      setIsBtnDisabled(true);
-    }
-  }, [editTitle, editDesc]);
 
   return (
     <View style={styles.container}>

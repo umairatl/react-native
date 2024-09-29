@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { getTodoByID, updateItem } from "../helpers/asyncStorage";
+import { deleteTodo, getTodoByID, updateItem } from "../helpers/asyncStorage";
 
 export default function DetailToDo({ route, navigation }) {
   const { id } = route.params || {};
@@ -28,6 +28,18 @@ export default function DetailToDo({ route, navigation }) {
     Alert.alert("Yeayy!", "Congratulations for completing the task", [
       {
         text: "Back",
+        onPress: () => navigation.navigate("My To-Do App"),
+      },
+    ]);
+  };
+
+  const onDeleteTodo = async () => {
+    const id = item.id;
+    await deleteTodo(id);
+
+    Alert.alert("Deleted!", "Todo Deleted Successfully", [
+      {
+        text: "OK",
         onPress: () => navigation.navigate("My To-Do App"),
       },
     ]);
@@ -66,6 +78,12 @@ export default function DetailToDo({ route, navigation }) {
       ) : (
         <Text style={styles.desc}>Item is Completed</Text>
       )}
+
+      <TouchableOpacity onPress={onDeleteTodo}>
+        <View style={styles.deleteBtn}>
+          <Text style={styles.btnText}>Delete To Do</Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -107,7 +125,7 @@ const styles = StyleSheet.create({
   wrapBtn: {
     marginTop: 35,
     backgroundColor: "#292989",
-    borderRadius: 8,
+    borderRadius: 10,
     width: 160,
   },
   btnText: {
@@ -120,5 +138,11 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  deleteBtn: {
+    marginTop: 35,
+    backgroundColor: "#8B0000",
+    borderRadius: 14,
+    width: 160,
   },
 });
