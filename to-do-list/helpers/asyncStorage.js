@@ -2,24 +2,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const getToDoList = async () => {
   try {
-    const storedList = await AsyncStorage.getItem("todo");
-    if (storedList) {
-      return JSON.parse(storedList);
-    }
+    const todo = await AsyncStorage.getItem("todo");
+    const todoList = todo ? JSON.parse(todo) : [];
+    return todoList;
   } catch (err) {
     console.log("Error executing getToDoList", err);
   }
 };
 
-export const storeNewItem = async (item) => {
-  try {
-    await AsyncStorage.setItem("todo", JSON.stringify(item));
-  } catch (err) {
-    console.log("Error executing storeItme", err);
-  }
-};
-
-export const getItemById = async (id) => {
+export const getTodoByID = async (id) => {
   try {
     const storedList = await AsyncStorage.getItem("todo");
     let todos = storedList ? JSON.parse(storedList) : [];
@@ -29,7 +20,15 @@ export const getItemById = async (id) => {
       return todos[index];
     }
   } catch (err) {
-    console.log("Error executing getItemById", err);
+    console.log("Error executing getTodoByID", err);
+  }
+};
+
+export const storeNewTodo = async (item) => {
+  try {
+    await AsyncStorage.setItem("todo", JSON.stringify(item));
+  } catch (err) {
+    console.log("Error executing storeNewTodo", err);
   }
 };
 
@@ -46,6 +45,7 @@ export const updateItem = async (id, title, description, status) => {
         status,
       };
     }
+
     await AsyncStorage.setItem("todo", JSON.stringify(todos));
   } catch (err) {
     console.log("Error while updateItem", err);

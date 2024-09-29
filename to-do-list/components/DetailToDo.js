@@ -1,16 +1,16 @@
 import { useState, useCallback } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { getItemById, updateItem } from "../helper/loadList";
+import { getTodoByID, updateItem } from "../helpers/asyncStorage";
 
-export default function ViewItemSceen({ route, navigation }) {
+export default function DetailToDo({ route, navigation }) {
   const { id } = route.params || {};
   const [item, setItem] = useState({});
 
   useFocusEffect(
     useCallback(() => {
       const loadData = async () => {
-        data = await getItemById(id);
+        data = await getTodoByID(id);
         setItem(data);
       };
 

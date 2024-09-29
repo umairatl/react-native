@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { updateItem } from "../helper/loadList";
+import { updateItem } from "../helpers/asyncStorage";
 
 export default function EditToDo({ route, navigation }) {
   const { item } = route.params || {};
@@ -80,14 +80,6 @@ const styles = StyleSheet.create({
     textAlign: "left",
     marginTop: 25,
     marginBottom: 10,
-  },
-  search: {
-    borderWidth: 1,
-    margin: 10,
-    borderColor: "black",
-    padding: 7,
-    width: "90%",
-    height: 50,
   },
   detailInput: {
     fontSize: 15,

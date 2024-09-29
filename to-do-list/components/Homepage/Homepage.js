@@ -1,38 +1,37 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import {
-  FlatList,
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
   TouchableWithoutFeedback,
-  Keyboard,
+  View,
 } from "react-native";
+import { getToDoList } from "../../helpers/asyncStorage";
+import HomeFlatList from "./Flatlist";
 
-export default function ToDoList({ navigation }) {
+export default function Homepage({ navigation }) {
   const [data, setData] = useState([]);
-  const [searchData, setSearchData] = useState([]);
+  const [searchData, setSearchData] = useState([]); //data to execute filter
   const [tabActive, setTabActive] = useState("pending");
 
-  const getToDoList = async () => {
+  const renderList = async () => {
     try {
-      const todo = await AsyncStorage.getItem("todo");
-      const todoList = todo ? JSON.parse(todo) : [];
-      setSearchData(todoList); //will be a fixed [data] to do filteration
+      const todoList = await getToDoList();
+      setSearchData(todoList);
       onLoadContentByTab(todoList, "pending");
     } catch (err) {
-      console.log("Error executing getToDoList", err);
+      console.log("Error executing renderList", err);
     }
   };
 
   const onLoadContentByTab = (todoList, tab) => {
     if (tab === "complete") {
-      setData(todoList.filter((x) => x.status === 0)); //already complete
+      setData(todoList.filter((x) => x.status === 0));
     } else {
-      setData(todoList.filter((x) => x.status === 1)); //havent complete yet
+      setData(todoList.filter((x) => x.status === 1));
     }
   };
 
@@ -47,19 +46,16 @@ export default function ToDoList({ navigation }) {
     );
     setData(newList);
   };
+
   useFocusEffect(
     useCallback(() => {
       setTabActive("pending");
-      getToDoList();
+      renderList();
     }, [])
   );
 
   const onClickAdd = () => {
     navigation.navigate("To Do Details", { data });
-  };
-
-  const onClickViewDetail = (id) => {
-    navigation.navigate("View Item", { id });
   };
 
   return (
@@ -87,6 +83,7 @@ export default function ToDoList({ navigation }) {
             </View>
           </TouchableOpacity>
         </View>
+
         {tabActive === "pending" && (
           <>
             <TextInput
@@ -97,41 +94,22 @@ export default function ToDoList({ navigation }) {
             />
 
             <TouchableOpacity onPress={onClickAdd}>
-              <View style={styles.item}>
-                <Text style={styles.taskText}> + Add New Item </Text>
+              <View
+                style={[
+                  styles.searchInput,
+                  { backgroundColor: "#d6d6f2", padding: 20 },
+                ]}
+              >
+                <Text> + Add New Item </Text>
               </View>
             </TouchableOpacity>
           </>
         )}
 
-        <FlatList
+        <HomeFlatList
           data={data}
-          keyExtractor={(item) => item.id}
-          scrollEnabled={true}
-          style={{ height: 480 }}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => {
-                onClickViewDetail(item.id);
-              }}
-            >
-              <View style={styles.item}>
-                <View style={styles.wrapFlatList}>
-                  <View
-                    style={{
-                      width: 10,
-                      height: 10,
-                      backgroundColor:
-                        tabActive === "pending" ? "#292989" : "green",
-                      borderRadius: 50,
-                    }}
-                  ></View>
-                  <Text style={styles.taskText}>{item.title}</Text>
-                </View>
-                <Text>{item.description}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
+          tabActive={tabActive}
+          navigation={navigation}
         />
       </View>
     </TouchableWithoutFeedback>
@@ -141,21 +119,6 @@ export default function ToDoList({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#f2f2f2",
-  },
-  item: {
-    backgroundColor: "#d6d6f2",
-    padding: 16,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   title: {
     fontSize: 16,
@@ -168,17 +131,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     borderRadius: 8,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-  },
-  taskText: {
-    fontSize: 16,
-    fontWeight: "bold",
   },
   wrapBtnOptions: {
     display: "flex",
@@ -194,12 +149,5 @@ const styles = StyleSheet.create({
   activeTab: {
     borderBottomWidth: 2,
     borderBottomColor: "292989",
-  },
-  wrapFlatList: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "start",
-    alignItems: "center",
-    gap: 10,
   },
 });

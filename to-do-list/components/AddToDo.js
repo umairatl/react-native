@@ -8,7 +8,7 @@ import {
   View,
   Alert,
 } from "react-native";
-import { storeNewItem } from "../helper/loadList";
+import { storeNewTodo } from "../helpers/asyncStorage";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default function AddToDo({ route, navigation }) {
@@ -30,11 +30,11 @@ export default function AddToDo({ route, navigation }) {
       title: newItemTitle,
       id: Math.random().toString(36).substring(2, 9),
       description: newItemDesc,
-      status: 1, //means its still active
+      status: 1,
     };
 
     const newList = [...data, newToDo];
-    await storeNewItem(newList);
+    await storeNewTodo(newList);
 
     Alert.alert("Yeayy!", "Added Successfully", [
       {
@@ -47,37 +47,35 @@ export default function AddToDo({ route, navigation }) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <>
-          <View>
-            <Text style={styles.title}>Item Title</Text>
-            <TextInput
-              style={styles.detailInput}
-              placeholder="Review title"
-              onChangeText={(val) => {
-                setNewItemTitle(val);
-              }}
-              value={newItemTitle}
-            />
-            <Text style={styles.title}>Item Description</Text>
-            <TextInput
-              style={styles.detailInput}
-              placeholder="Review description"
-              onChangeText={(val) => {
-                setNewItemDesc(val);
-              }}
-              value={newItemDesc}
-              A
-              multiline
-              minHeight={100}
-            />
-          </View>
+        <View>
+          <Text style={styles.title}>Item Title</Text>
+          <TextInput
+            style={styles.detailInput}
+            placeholder="Review title"
+            onChangeText={(val) => {
+              setNewItemTitle(val);
+            }}
+            value={newItemTitle}
+          />
+          <Text style={styles.title}>Item Description</Text>
+          <TextInput
+            style={styles.detailInput}
+            placeholder="Review description"
+            onChangeText={(val) => {
+              setNewItemDesc(val);
+            }}
+            value={newItemDesc}
+            A
+            multiline
+            minHeight={100}
+          />
+        </View>
 
-          <TouchableOpacity disabled={isBtnDisabled} onPress={onClickSubmit}>
-            <View style={styles.wrapBtn}>
-              <Text style={styles.btnText}>Submit</Text>
-            </View>
-          </TouchableOpacity>
-        </>
+        <TouchableOpacity disabled={isBtnDisabled} onPress={onClickSubmit}>
+          <View style={styles.wrapBtn}>
+            <Text style={styles.btnText}>Submit</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -94,14 +92,6 @@ const styles = StyleSheet.create({
     textAlign: "left",
     marginTop: 25,
     marginBottom: 10,
-  },
-  search: {
-    borderWidth: 1,
-    margin: 10,
-    borderColor: "black",
-    padding: 7,
-    width: "90%",
-    height: 50,
   },
   detailInput: {
     fontSize: 15,
